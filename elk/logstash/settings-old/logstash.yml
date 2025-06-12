@@ -1,0 +1,20 @@
+# pipeline:
+#   batch:
+#     size: 125
+#     delay: 50
+
+http:
+  host: "0.0.0.0"
+xpack:
+  monitoring:
+    enabled: true
+    elasticsearch:
+      username: 'logstash_system'
+      password: 'M3pnH3bEkkFDxDhXeBGx'
+      
+      # username: 'elastic'
+      # password: 'p=2wU6sT52*I*7jwJ-4j'
+
+      hosts: ["http://localhost:9200"]
+      ssl:
+        verification_mode: none

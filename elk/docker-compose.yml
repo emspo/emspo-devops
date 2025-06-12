@@ -1,0 +1,132 @@
+# services:
+#   elasticsearch:
+#     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+#     container_name: elasticsearch
+#     init: true
+#     restart: always
+#     environment:
+#       - node.name=elasticsearch
+#       - cluster.name=es-docker-cluster
+#       - discovery.type=single-node
+#       # - xpack.security.enabled=false
+#       # - xpack.security.enrollment.enabled=false
+#     ports:
+#       - "9200:9200"
+#       - "9300:9300"
+#     volumes:
+#       - es_data:/usr/share/elasticsearch/data
+#     networks:
+#       - esnet
+
+#   kibana:
+#     image: docker.elastic.co/kibana/kibana:8.17.0
+#     container_name: kibana
+#     environment:
+#       - node.name=kibana
+#       - cluster.name=es-docker-cluster
+#       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#     ports:
+#       - "5601:5601"
+#     networks:
+#       - esnet
+#     depends_on:
+#       - elasticsearch
+
+# volumes:
+#   es_data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: C:\Users\SoftwareDev-MSPO\Projects\devops\elasticsearch\data
+#       o: bind
+
+# networks:
+#   esnet:
+#     driver: bridge
+
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0
+    container_name: elasticsearch
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"      
+      - elasticsearch_username=elastic
+      - elasticsearch_password=secret
+      - xpack.security.enrollment.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.fleet.agents.tlsCheckDisabled=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+      - esbin:/usr/share/elasticsearch/bin
+    networks:
+      - esnet
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.18.0
+    container_name: logstash
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - logstashsettings:/usr/share/logstash/config
+    depends_on:
+      - elasticsearch
+    networks:
+      - esnet
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.18.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      # - ELASTICSEARCH_USERNAME=elastic
+      # - ELASTICSEARCH_PASSWORD=secret
+      - ELASTICSEARCH_SERVICE_TOKEN=AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYTpGS3lEUDBaT1R0T29wem1ZTzd0NW13
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - esnet
+
+volumes:
+  esdata:
+    driver: local
+    driver_opts:
+      type: none
+      device: C:\Users\SoftwareDev-MSPO\Projects\devops\elasticsearch\data
+      o: bind
+
+  esbin:
+    driver: local
+    driver_opts:
+      type: none
+      device: C:\Users\SoftwareDev-MSPO\Projects\devops\elasticsearch\bin
+      o: bind
+
+  logstashsettings:
+    driver: local
+    driver_opts:
+      type: none
+      device: C:\Users\SoftwareDev-MSPO\Projects\devops\logstash\settings
+      o: bind
+
+networks:
+  esnet:
+    driver: bridge

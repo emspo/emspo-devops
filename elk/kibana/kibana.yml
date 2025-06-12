@@ -1,0 +1,12 @@
+# filepath: c:\Users\SoftwareDev-MSPO\Projects\devops\kibana\kibana.yml
+server.name: kibana
+server.host: "0.0.0.0"
+elasticsearch.hosts: ["http://localhost:9200"]
+xpack.encryptedSavedObjects.encryptionKey: "c9472f76f42a2de684ac92190811b9f2"
+xpack.reporting.encryptionKey: "65b17786cbb733c48998d75df1f52b15"
+xpack.security.encryptionKey: "4a3bf3159181f11fe7a6bc49a5f508ba"
+elasticsearch.username: "kibana_system"
+elasticsearch.password: "yR=9CB3=ukSzS34In-dl"
+monitoring.ui.container.elasticsearch.enabled: true
+monitoring.ui.container.logstash.enabled: true
+# elasticsearch.ssl.verificationMode: none

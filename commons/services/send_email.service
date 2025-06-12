@@ -1,0 +1,13 @@
+[Unit]
+Description=Sync eMSPO Email Sender
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /root/devops/commons/email_consumer.py
+WorkingDirectory=/root/devops/commons
+Restart=always
+User=root
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,19 @@
+# http.host: "0.0.0.0"
+# xpack.monitoring.elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+
+
+http:
+  host: "0.0.0.0"
+xpack:
+  monitoring:
+    enabled: true
+    elasticsearch:
+      # username: 'logstash_system'
+      # password: 'uiAYkhjZ9BXyJM8*t40X'
+      
+      username: 'elastic'
+      password: 'eu2_87KW*eBNvLUGWYRK'
+
+      hosts: ["http://localhost:9200"]
+      ssl:
+        verification_mode: none

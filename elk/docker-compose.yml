@@ -80,6 +80,8 @@ services:
     ports:
       - "5044:5044"
       - "9600:9600"
+    environment: 
+      - ELASTICSEARCH_SERVICE_TOKEN=AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYTpGS3lEUDBaT1R0T29wem1ZTzd0NW13=value
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
       - logstashsettings:/usr/share/logstash/config
@@ -110,21 +112,21 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: C:\Users\SoftwareDev-MSPO\Projects\devops\elasticsearch\data
+      device: C:\Users\SoftwareDev-MSPO\Projects\devops\elk\elasticsearch\data
       o: bind
 
   esbin:
     driver: local
     driver_opts:
       type: none
-      device: C:\Users\SoftwareDev-MSPO\Projects\devops\elasticsearch\bin
+      device: C:\Users\SoftwareDev-MSPO\Projects\devops\elk\elasticsearch\bin
       o: bind
 
   logstashsettings:
     driver: local
     driver_opts:
       type: none
-      device: C:\Users\SoftwareDev-MSPO\Projects\devops\logstash\settings
+      device: C:\Users\SoftwareDev-MSPO\Projects\devops\elk\logstash\settings
       o: bind
 
 networks:

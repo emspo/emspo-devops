@@ -9,11 +9,12 @@ xpack:
     enabled: true
     elasticsearch:
       # username: 'logstash_system'
-      # password: 'uiAYkhjZ9BXyJM8*t40X'
+      # password: 'puSnjJ=r7rpfFpMN6DMV'
       
       username: 'elastic'
-      password: 'eu2_87KW*eBNvLUGWYRK'
+      password: 'fZ*vVeJ*CCY2NBegdUG+'
 
-      hosts: ["http://localhost:9200"]
+      # hosts: ["http://localhost:9200"]
+      hosts: ["elasticsearch:9200"]
       ssl:
         verification_mode: none

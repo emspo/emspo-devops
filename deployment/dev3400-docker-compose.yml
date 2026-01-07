@@ -1,0 +1,46 @@
+services:
+  emspo-fe-traceability:
+    container_name: emspo-fe-traceability
+    image: emspo/mspots_fe:dev3400
+    init: true
+    restart: always
+    networks:
+      - msponettraceability
+    ports:
+      - "0.0.0.0:3400:3000"
+
+  emspo-be-traceability:
+    container_name: emspo-be-traceability
+    image: emspo/mspots_be:dev3400
+    init: true
+    env_file: dev3400.env
+    volumes:
+      - mspots_be_volume-traceability:/var/www/mspo-ts-api/uploads/
+    networks:
+      - msponettraceability
+      - supabase_default
+    ports:
+      - "0.0.0.0:3401:3003"
+    restart: always
+
+volumes:
+  mspots_be_volume-traceability:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api-traceability/uploads/
+      o: bind
+
+networks:
+  msponettraceability:
+    driver: bridge
+  supabase_default:
+    name: supabase_default
+    external: true
+    driver: bridge
+#    enable_ipv6: true
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: "172.28.0.0/16"
+#        - subnet: "2001:db8:1::/64"

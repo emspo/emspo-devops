@@ -1,0 +1,18 @@
+// build image
+docker build -t mspots_be:dev .
+
+// run
+docker run -it --init --rm -p 3500:3000 mspots_be:dev
+docker run -it --init --rm -p 3500:3000 --network="host" mspots_be:dev
+docker run -it --init --rm -p 3500:3000 --env-file ./.env.localdocker  mspots_be:dev
+docker run -it --init --rm --network="host" -v /var/www/mspo-ts-api/uploads/:/var/www/mspo-ts-api/uploads/ -d emspo/mspots_be:dev
+docker run -it --init --rm --network="host" --env-file be-prod.env -v /var/www/mspo-ts-api/uploads/:/var/www/mspo-ts-api/uploads/ -d emspo/mspots_be:dev
+
+// tag 
+docker tag mspots_be:dev emspo/mspots_be:dev
+
+// push
+docker push emspo/mspots_be:dev
+
+// pull 
+docker pull emspo/mspots_be:dev

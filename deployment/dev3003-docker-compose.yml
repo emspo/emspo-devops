@@ -1,0 +1,46 @@
+services:
+  emspo-fe-training:
+    container_name: emspo-fe-training
+    image: emspo/mspots_fe:dev3003
+    init: true
+    restart: always
+    networks:
+      - mspotraining
+    ports:
+      - "0.0.0.0:3003:3000"
+
+  emspo-be-training:
+    container_name: emspo-be-training
+    image: emspo/mspots_be:dev3003
+    init: true
+    env_file: dev3003.env
+    volumes:
+      - mspots_be_volume-training:/var/www/mspo-ts-api/uploads/
+    networks:
+      - mspotraining
+      - supabase_default
+    ports:
+      - "0.0.0.0:3004:3003"
+    restart: always
+
+volumes:
+  mspots_be_volume-training:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api-training/uploads/
+      o: bind
+
+networks:
+  mspotraining:
+    driver: bridge
+  supabase_default:
+    name: supabase_default
+    external: true
+    driver: bridge
+#    enable_ipv6: true
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: "172.28.0.0/16"
+#        - subnet: "2001:db8:1::/64"

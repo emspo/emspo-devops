@@ -1,0 +1,24 @@
+services:
+  emspo-fe-all:
+    container_name: emspo-fe-all
+    image: emspo/mspots_fe:dev3000
+    init: true
+    restart: always
+    network_mode: "host"
+
+  emspo-be-all:
+    container_name: emspo-be-all
+    image: emspo/mspots_be:dev3000
+    init: true
+    env_file: be-dev3000.env
+    volumes:
+      - mspots_be_volume_all:/var/www/mspo-ts-api/uploads/
+    network_mode: "host"
+
+volumes:
+  mspots_be_volume_all:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api-all/uploads/
+      o: bind

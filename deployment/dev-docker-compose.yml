@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  frontend:
+    image: emspo/mspots_fe:dev
+    init: true
+    network_mode: "host"
+    restart: always
+
+  backend:
+    image: emspo/mspots_be:dev
+    init: true
+    env_file: be-dev.env
+    volumes:
+      - mspots_be_volume:/var/www/mspo-ts-api/uploads/
+    network_mode: "host"
+    restart: always
+
+volumes:
+  mspots_be_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api/uploads/
+      o: bind

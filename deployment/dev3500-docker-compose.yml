@@ -1,0 +1,46 @@
+services:
+  emspo-fe-audit:
+    container_name: emspo-fe-audit
+    image: emspo/mspots_fe:dev3500
+    init: true
+    restart: always
+    networks:
+      - msponetaudit
+    ports:
+      - "0.0.0.0:3500:3000"
+
+  emspo-be-audit:
+    container_name: emspo-be-audit
+    image: emspo/mspots_be:dev3500
+    init: true
+    env_file: dev3500.env
+    volumes:
+      - mspots_be_volume-audit:/var/www/mspo-ts-api/uploads/
+    networks:
+      - msponetaudit
+      - supabase_default
+    ports:
+      - "0.0.0.0:3501:3003"
+    restart: always
+
+volumes:
+  mspots_be_volume-audit:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api-audit/uploads/
+      o: bind
+
+networks:
+  msponetaudit:
+    driver: bridge
+  supabase_default:
+    name: supabase_default
+    external: true
+    driver: bridge
+#    enable_ipv6: true
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: "172.28.0.0/16"
+#        - subnet: "2001:db8:1::/64"

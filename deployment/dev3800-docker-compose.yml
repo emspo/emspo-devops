@@ -1,0 +1,24 @@
+services:
+  emspo-fe-fulltest:
+    container_name: emspo-fe-fulltest
+    image: emspo/mspots_fe:dev3800
+    init: true
+    restart: always
+    network_mode: "host"
+
+  emspo-be-fulltest:
+    container_name: emspo-be-fulltest
+    image: emspo/mspots_be:dev3800
+    init: true
+    env_file: be-dev3800.env
+    volumes:
+      - mspots_be_volume_fulltest:/var/www/mspo-ts-api/uploads/
+    network_mode: "host"
+
+volumes:
+  mspots_be_volume_fulltest:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api-fulltest/uploads/
+      o: bind

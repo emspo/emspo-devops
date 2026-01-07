@@ -1,0 +1,46 @@
+services:
+  emspo-fe-2:
+    container_name: emspo-fe-2
+    image: emspo/mspots_fe:dev2
+    init: true
+    restart: always
+    networks:
+      - msponet2
+    ports:
+      - "0.0.0.0:3100:3000"
+
+  emspo-be-2:
+    container_name: emspo-be-2
+    image: emspo/mspots_be:dev2
+    init: true
+    env_file: be-dev2.env
+    volumes:
+      - mspots_be_volume2:/var/www/mspo-ts-api/uploads/
+    networks:
+      - msponet2
+      - supabase_default
+    ports:
+      - "0.0.0.0:3103:3003"
+    restart: always
+
+volumes:
+  mspots_be_volume2:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api-2/uploads/
+      o: bind
+
+networks:
+  msponet2:
+    driver: bridge
+  supabase_default:
+    name: supabase_default
+    external: true
+    driver: bridge
+#    enable_ipv6: true
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: "172.28.0.0/16"
+#        - subnet: "2001:db8:1::/64"

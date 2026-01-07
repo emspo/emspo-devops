@@ -1,0 +1,24 @@
+services:
+  emspo-fe-spoc:
+    container_name: emspo-fe-spoc
+    image: emspo/mspots_fe:dev3100
+    init: true
+    restart: always
+    network_mode: "host"
+
+  emspo-be-spoc:
+    container_name: emspo-be-spoc
+    image: emspo/mspots_be:dev3100
+    init: true
+    env_file: be-dev3100.env
+    volumes:
+      - mspots_be_volume_spoc:/var/www/mspo-ts-api/uploads/
+    network_mode: "host"
+
+volumes:
+  mspots_be_volume_spoc:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api-spoc/uploads/
+      o: bind

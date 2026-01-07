@@ -1,0 +1,46 @@
+services:
+  emspo-fe-logo:
+    container_name: emspo-fe-logo
+    image: emspo/mspots_fe:dev3300
+    init: true
+    restart: always
+    networks:
+      - msponetlogo
+    ports:
+      - "0.0.0.0:3300:3000"
+
+  emspo-be-logo:
+    container_name: emspo-be-logo
+    image: emspo/mspots_be:dev3300
+    init: true
+    env_file: be-dev3300.env
+    volumes:
+      - mspots_be_volume-logo:/var/www/mspo-ts-api/uploads/
+    networks:
+      - msponetlogo
+      - supabase_default
+    ports:
+      - "0.0.0.0:3301:3003"
+    restart: always
+
+volumes:
+  mspots_be_volume-logo:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api-logo/uploads/
+      o: bind
+
+networks:
+  msponetlogo:
+    driver: bridge
+  supabase_default:
+    name: supabase_default
+    external: true
+    driver: bridge
+#    enable_ipv6: true
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: "172.28.0.0/16"
+#        - subnet: "2001:db8:1::/64"

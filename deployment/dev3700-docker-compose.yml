@@ -1,0 +1,24 @@
+services:
+  emspo-fe-cng:
+    container_name: emspo-fe-cng
+    image: emspo/mspots_fe:dev3700
+    init: true
+    restart: always
+    network_mode: "host"
+
+  emspo-be-cng:
+    container_name: emspo-be-cng
+    image: emspo/mspots_be:dev3700
+    init: true
+    env_file: be-dev3700.env
+    volumes:
+      - mspots_be_volume_cng:/var/www/mspo-ts-api/uploads/
+    network_mode: "host"
+
+volumes:
+  mspots_be_volume_cng:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api-cng/uploads/
+      o: bind

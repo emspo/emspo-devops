@@ -1,0 +1,46 @@
+services:
+  emspo-fe-toprodtrace:
+    container_name: emspo-fe-toprodtrace
+    image: emspo/mspots_fe:staging3010
+    init: true
+    restart: always
+    networks:
+      - msponettoprodtrace
+    ports:
+      - "0.0.0.0:3010:3000"
+
+  emspo-be-toprodtrace:
+    container_name: emspo-be-toprodtrace
+    image: emspo/mspots_be:staging3010
+    init: true
+    env_file: staging3010.env
+    volumes:
+      - mspots_be_volume-toprodtrace:/var/www/mspo-ts-api/uploads/
+    networks:
+      - msponettoprodtrace
+      - supabase_default
+    ports:
+      - "0.0.0.0:3011:3003"
+    restart: always
+
+volumes:
+  mspots_be_volume-toprodtrace:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api-toprodtrace/uploads/
+      o: bind
+
+networks:
+  msponettoprodtrace:
+    driver: bridge
+  supabase_default:
+    name: supabase_default
+    external: true
+    driver: bridge
+#    enable_ipv6: true
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: "172.28.0.0/16"
+#        - subnet: "2001:db8:1::/64"

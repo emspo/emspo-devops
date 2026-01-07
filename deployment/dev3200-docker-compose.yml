@@ -1,0 +1,46 @@
+services:
+  emspo-fe-ghg:
+    container_name: emspo-fe-ghg
+    image: emspo/mspots_fe:dev3200
+    init: true
+    restart: always
+    networks:
+      - msponetghg
+    ports:
+      - "0.0.0.0:3200:3000"
+
+  emspo-be-ghg:
+    container_name: emspo-be-ghg
+    image: emspo/mspots_be:dev3200
+    init: true
+    env_file: be-dev3200.env
+    volumes:
+      - mspots_be_volume-ghg:/var/www/mspo-ts-api/uploads/
+    networks:
+      - msponetghg
+      - supabase_default
+    ports:
+      - "0.0.0.0:3201:3003"
+    restart: always
+
+volumes:
+  mspots_be_volume-ghg:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/www/mspo-ts-api-ghg/uploads/
+      o: bind
+
+networks:
+  msponetghg:
+    driver: bridge
+  supabase_default:
+    name: supabase_default
+    external: true
+    driver: bridge
+#    enable_ipv6: true
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: "172.28.0.0/16"
+#        - subnet: "2001:db8:1::/64"

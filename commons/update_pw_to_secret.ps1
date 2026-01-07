@@ -1,18 +1,39 @@
-# ------------------------------
-# Safe Update user_master Password
-# ------------------------------
+<#
+.SYNOPSIS
+Update user_master passwords on PostgreSQL server (all databases)
+.PARAMETER Server
+Choose 'dev' or 'staging'. Defaults to 'dev'.
+#>
 
-# === CONFIGURATION ===
-# $PGHOST = "185.93.166.49"
-$PGHOST = "103.27.74.207"
-$PGUSER = "postgres"
-$PGPASSWORD = "sasa"   # <-- replace securely
-$NEW_PASSWORD = "secret"             # <-- new password, or use hashed below
-$USE_HASH = $false                   # $true = store bcrypt hash
+param(
+    [string]$Server = "dev"
+)
+
+# === SERVER CONFIGURATION ===
+switch ($Server.ToLower()) {
+    "dev" {
+        $PGHOST = "185.93.166.49"
+        $PGUSER = "postgres"
+        $PGPASSWORD = "sasa"
+    }
+    "staging" {
+        $PGHOST = "103.27.74.207"
+        $PGUSER = "postgres"
+        $PGPASSWORD = "sasa"
+    }
+    default {
+        Write-Host "Unknown server '$Server'. Use 'dev' or 'staging'."
+        exit
+    }
+}
+
+# === UPDATE SETTINGS ===
+$NEW_PASSWORD = "secret"       # new password to set
+$USE_HASH = $false             # $true = bcrypt hash
 $LOG_FILE = "update_log.csv"
 
 # Optional: list of databases to skip (e.g., production)
-$SKIP_DATABASES = @("postgres", "prod_db", "analytics_db")
+$SKIP_DATABASES = @("postgres", "production_db")
 
 # Set environment variables for psql
 $env:PGHOST = $PGHOST
@@ -33,28 +54,15 @@ WHERE datistemplate = false
 # Filter out skipped databases
 $databases = $databases | Where-Object { $SKIP_DATABASES -notcontains $_ }
 
-Write-Host "Databases to be processed:"
+Write-Host "Databases to be processed on $Server server ($PGHOST):"
 $databases | ForEach-Object { Write-Host " - $_" }
 
 # --- STEP 2: DRY-RUN ---
-Write-Host "`n=== DRY-RUN: Listing schemas and row counts ===`n"
+Write-Host "`n=== DRY-RUN: Listing schemas ===`n"
 
 foreach ($db in $databases) {
     Write-Host "===== DATABASE: $db ====="
 
-    # List schemas containing user_master and row counts
-    $dryRunQuery = @"
-SELECT table_schema,
-       COUNT(*) AS rows_count
-FROM information_schema.tables t
-JOIN "$db".information_schema.tables t2
-  ON t.table_schema = t2.table_schema
-WHERE t.table_name = 'user_master'
-  AND t.table_schema NOT IN ('pg_catalog','information_schema')
-GROUP BY table_schema;
-"@
-
-    # Actually, better: just get the schemas; row counts will be fetched in UPDATE step
     $schemas = psql -d $db -Atc "
 SELECT table_schema
 FROM information_schema.tables
@@ -64,12 +72,12 @@ WHERE table_name = 'user_master'
 
     foreach ($schema in $schemas) {
         Write-Host "Database: $db | Schema: $schema"
-        "$db,$schema,0,DryRun,$((Get-Date).ToString('s'))" | Out-File $LOG_FILE -Append -Encoding UTF8
+        "$Server,DryRun,$db,$schema,0,DryRun,$((Get-Date).ToString('s'))" | Out-File $LOG_FILE -Append -Encoding UTF8
     }
 }
 
 # --- STEP 3: Confirm update ---
-$confirm = Read-Host "`nDry-run complete. Do you want to APPLY the update to all databases? (Y/N)"
+$confirm = Read-Host "`nDry-run complete. Do you want to APPLY the update to all databases on $Server server? (Y/N)"
 if ($confirm -ne "Y") {
     Write-Host "Aborted by user. No changes made."
     exit
@@ -144,13 +152,13 @@ END $$;
                 $dbName = $matches[1]
                 $schemaName = $matches[2]
                 $rows = $matches[3]
-                "Update,$dbName,$schemaName,$rows,Success,$((Get-Date).ToString('s'))" | Out-File $LOG_FILE -Append -Encoding UTF8
+                "Update,$Server,$dbName,$schemaName,$rows,Success,$((Get-Date).ToString('s'))" | Out-File $LOG_FILE -Append -Encoding UTF8
             }
         }
     } catch {
-        Write-Host "Error updating ${db}: ${_}"
-        "Update,$db,N/A,0,Error,$((Get-Date).ToString('s'))" | Out-File $LOG_FILE -Append -Encoding UTF8
+        Write-Host "Error updating ${db}: $_"
+        "Update,$Server,$db,N/A,0,Error,$((Get-Date).ToString('s'))" | Out-File $LOG_FILE -Append -Encoding UTF8
     }
 }
 
-Write-Host "`nAll done. Log saved to $LOG_FILE"
+Write-Host "`nAll done on $Server server. Log saved to $LOG_FILE"

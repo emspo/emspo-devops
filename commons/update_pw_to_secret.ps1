@@ -118,6 +118,7 @@ BEGIN
     END LOOP;
 END $$;
 '@
+        $psqlCommand = $psqlCommand -replace '\$NEW_PASSWORD', $NEW_PASSWORD
     } else {
         $psqlCommand = @'
 DO $$
@@ -142,6 +143,7 @@ BEGIN
     END LOOP;
 END $$;
 '@
+        $psqlCommand = $psqlCommand -replace '\$NEW_PASSWORD', $NEW_PASSWORD
     }
 
     # Execute update and capture NOTICE messages
